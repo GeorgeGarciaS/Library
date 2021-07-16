@@ -1,0 +1,5 @@
+{
+  "dbUser": "george",
+  "dbPassword": "12345",
+  "serverLink": "mongodb+srv://<User>:<Password>@cluster0.vwl9k.mongodb.net/myFirstDatabase?retryWrites=true"
+}

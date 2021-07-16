@@ -23,8 +23,8 @@
 
 
 ## Architecture Flow Diagram
-![Image of Database](https://github.com/GeorgeGarciaS/Library/LibraryApi/blob/main/diagrams/MVCFlowDiagram.svg)
+![Image of Database](https://github.com/GeorgeGarciaS/Library/LibraryApi/tree/main/diagrams/MVCFlowDiagram.svg)
 
 ## DataBase Design
-![Image of Database](https://github.com/GeorgeGarciaS/Library/LibraryApi/blob/main/diagrams/DatabaseDiagram.svg)
+![Image of Database](https://github.com/GeorgeGarciaS/Library/LibraryApi/tree/main/diagrams/DatabaseDiagram.svg)
 

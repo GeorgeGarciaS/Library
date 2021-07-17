@@ -50,9 +50,52 @@ exports.authorDetail = function (req, res, next) {
 };
 
 // handle author create
-exports.authorCreate = function (req, res) {
-  return res.status(200).json({});
-};
+exports.authorCreate = [
+  authorValidation.validationRules(),
+  authorValidation.validate,
+  // process request after validation and sanitization
+  (req, res, next) => {
+    async.parallel({
+      // search for repeated input
+      author(callback) {
+        Author.find({first_name: req.body.first_name, last_name: req.body.last_name})
+          .exec(callback);
+      },
+    },
+    (error, results) => {
+      // Data is already valid
+      // Create an Author object with sanitized data
+      if (error) {return next(error);} // error in API usage
+      if (results.author.length !== 0) {
+        // repeated input
+        const err = Error(
+          'The first and last names selected are already an author in the database',
+        );
+        err.name = 'input error';
+        err.status = 400;
+        return next(err);
+      }
+      const author = new Author(
+        {
+          first_name: req.body.first_name,
+          family_name: req.body.family_name,
+          date_of_birth: req.body.date_of_birth,
+          date_of_death: req.body.date_of_death,
+        },
+      );
+      author.save((err) => {
+        if (err) { return next(err); }
+        // successful, return sanitized input
+        return res.status(200).json({
+          first_name: author.first_name,
+          family_name: author.family_name,
+          date_of_birth: author.date_of_birth,
+          date_of_death: author.date_of_death,
+        });
+      });
+    });
+  },
+];
 
 // handle author delete
 exports.authorDelete = function (req, res) {

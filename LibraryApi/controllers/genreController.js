@@ -48,9 +48,46 @@ exports.genreDetail = function (req, res, next) {
 };
 
 // handle genre create
-exports.genreCreate = function (req, res) {
-  return res.status(200).json({});
-};
+exports.genreCreate = [
+  genreValidation.validationRules(),
+  genreValidation.validate,
+  // process request after validation and sanitization
+  (req, res, next) => {
+    async.parallel({
+      // search for repeated input
+      genre(callback) {
+        Genre.find({name: req.body.name})
+          .exec(callback);
+      },
+    },
+    (error, results) => {
+      // Data is already valid
+      // Create an genre object with sanitized data
+      if (error) {return next(error);} // error in API usage
+      if (results.genre.length !== 0) {
+        // repeated input
+        const err = Error(
+          'The name selected are already a genre in the database',
+        );
+        err.name = 'input error';
+        err.status = 400;
+        return next(err);
+      }
+      const genre = new Genre(
+        {
+          name: req.body.name,
+        },
+      );
+      genre.save((err) => {
+        if (err) { return next(err); }
+        // successful, return sanitized input
+        return res.status(200).json({
+          name: genre.name,
+        });
+      });
+    });
+  },
+];
 
 // handle genre delete
 exports.genreDelete = function (req, res) {

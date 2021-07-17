@@ -64,8 +64,7 @@ describe('Author validation process', () => {
             family_name: 'Family name has non-alphanumeric characters or digits.',
           },
         });
-      })
-      .end(done);
+      });
   });
   test('rejection of greater birth date than death date', async () => {
     await request(app)
@@ -84,8 +83,7 @@ describe('Author validation process', () => {
             date_of_birth: 'Date of birth is greater than Date of death',
           },
         });
-      })
-      .end(done);
+      });
   });
   test('successful validation example with no date of death', async () => {
     await request(app)
@@ -105,8 +103,7 @@ describe('Author validation process', () => {
           date_of_birth: '2007-01-20',
           date_of_death: null,
         });
-      })
-      .end(done);
+      });
   });
   test('successful validation example', async () => {
     await request(app)
@@ -126,8 +123,7 @@ describe('Author validation process', () => {
           date_of_birth: '2007-01-20',
           date_of_death: '2017-01-20',
         });
-      })
-      .end(done);
+      });
   });
 });
 
@@ -140,7 +136,7 @@ test('return format for get /authors/ID', async () => {
         first_name: 'Test Author',
         family_name: 'Test Author',
         date_of_birth: '2007-01-20',
-        date_of_death: '017-01-20',
+        date_of_death: '2017-01-20',
         books: [
           expect.any(Object),
         ],

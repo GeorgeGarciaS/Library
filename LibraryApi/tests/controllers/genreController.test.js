@@ -13,7 +13,7 @@ describe('genre sanitization process', () => {
       .expect('Content-Type', /json/)
       .expect((res) => {
         expect(res.body).toEqual({
-          name: 'test One',
+          name: 'Test One',
         });
       });
   });

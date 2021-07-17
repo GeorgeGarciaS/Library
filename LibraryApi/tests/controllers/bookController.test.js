@@ -18,7 +18,7 @@ describe('book sanitization process', () => {
       .expect('Content-Type', /json/)
       .expect((res) => {
         expect(res.body).toEqual({
-          title: 'Test one',
+          title: 'Test One',
           author: expect.any(Object),
           summary: 'Test summary for test book',
           isbn: 'isbnXXXXX11',

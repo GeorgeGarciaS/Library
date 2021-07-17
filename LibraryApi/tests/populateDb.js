@@ -61,7 +61,7 @@ function createAuthors(cb) {
   async.parallel([
     // add more authors if necessary
     function (callback) {
-      authorCreate('Test', 'Author', '2007-01-20', '2017-01-20', callback);
+      authorCreate('Test Author', 'Test Author', '2007-01-20', '2017-01-20', callback);
     },
   ],
   cb);

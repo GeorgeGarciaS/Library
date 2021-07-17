@@ -15,15 +15,22 @@ exports.index = function (req, res, next) {
     genreCount(callback) {
       Genre.countDocuments({}, callback);
     },
-  }, (err, results) => {
-    if (err) {next(err);} // Error in API usage
+  }, (error, results) => {
+    if (error) {next(error);} // error in API usage
     return res.json({data: results});
   });
 };
 
 // list of all books
-exports.bookList = function (req, res) {
-  return res.status(200).json({});
+exports.bookList = function (req, res, next) {
+  Book.find()
+    .exec((error, bookList) => {
+      if (error) {
+        return next(error);
+      }
+      // successful
+      return res.status(200).json({bookList});
+    });
 };
 
 // details for a specific book

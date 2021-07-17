@@ -4,9 +4,10 @@
     "debug",
     "devstart",
     "libraryapi",
+    "luxon",
     "npm",
     "run",
     "serverstart",
-    "set",
+    "set"
   ]
 }

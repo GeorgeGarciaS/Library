@@ -23,7 +23,7 @@ exports.genreDetail = function (req, res, next) {
       Genre.findById(req.params.id)
         .exec(callback);
     },
-    genre_books(callback) {
+    genreBooks(callback) {
       Book.find({genre: req.params.id})
         .exec(callback);
     },
@@ -42,7 +42,7 @@ exports.genreDetail = function (req, res, next) {
     return res.status(200).json({
       // pass only necessary data
       name: results.genre.name,
-      books: results.books,
+      books: results.genreBooks,
     });
   });
 };

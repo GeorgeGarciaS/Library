@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+require('../mongoDbConfig');
 const debug = require('debug')('libraryapi:server');
 const http = require('http');
 const app = require('../app');

@@ -4,8 +4,21 @@ const Book = require('../models/book');
 const Author = require('../models/author');
 const Genre = require('../models/genre');
 
-exports.index = function (req, res) {
-  return res.status(200).json({});
+exports.index = function (req, res, next) {
+  async.parallel({
+    bookCount(callback) {
+      Book.countDocuments({}, callback);
+    },
+    authorCount(callback) {
+      Author.countDocuments({}, callback);
+    },
+    genreCount(callback) {
+      Genre.countDocuments({}, callback);
+    },
+  }, (err, results) => {
+    if (err) {next(err);} // Error in API usage
+    return res.json({data: results});
+  });
 };
 
 // list of all books

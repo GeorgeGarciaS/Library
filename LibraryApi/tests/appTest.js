@@ -6,7 +6,6 @@ const populateDb = require('./populateDb');
 
 beforeAll((done) => {
   populateDb.populateDbNow(done);
-  done();
 });
 
 afterAll((done) => {

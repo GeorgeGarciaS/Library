@@ -127,6 +127,47 @@ exports.genreDelete = function (req, res, next) {
 };
 
 // handle genre update
-exports.genreUpdate = function (req, res) {
-  return res.status(200).json({});
-};
+exports.genreUpdate = [
+  genreValidation.validationRules(),
+  genreValidation.validate,
+  // process request after validation and sanitization
+  (req, res, next) => {
+    // data is already valid
+    async.parallel({
+      // find genre with the same parameters
+      repeatedGenre(callback) {
+        Genre.find({
+          name: req.body.name,
+        })
+          .exec(callback);
+      },
+      genre(callback) {
+        Genre.findById(req.params.id)
+          .exec(callback);
+      },
+    }, (error, results) => {
+      if (error) {return next(error);}
+      if (results.repeatedGenre.length !== 0) {
+        const err = Error(
+          'One genre already exists with same specifications.',
+        );
+        err.name = 'input error';
+        err.status = 400;
+        return next(err);
+      }
+      // Create an Genre object with sanitized data
+      const updatedGenre = new Genre({
+        _id: req.params.id,
+        name: req.body.name,
+      });
+      Genre.findByIdAndUpdate(req.params.id, updatedGenre, {})
+        .exec((err) => {
+          if (err) {return next(err);}
+          // return genre object with sanitized data
+          return res.status(200).json({
+            name: req.body.name,
+          });
+        });
+    });
+  },
+];

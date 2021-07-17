@@ -57,16 +57,15 @@ exports.authorCreate = [
   (req, res, next) => {
     async.parallel({
       // search for repeated input
-      author(callback) {
+      repeatedAuthor(callback) {
         Author.find({first_name: req.body.first_name, last_name: req.body.last_name})
           .exec(callback);
       },
     },
     (error, results) => {
-      // Data is already valid
-      // Create an Author object with sanitized data
+      // data is already valid
       if (error) {return next(error);} // error in API usage
-      if (results.author.length !== 0) {
+      if (results.repeatedAuthor.length !== 0) {
         // repeated input
         const err = Error(
           'The first and last names selected are already an author in the database',
@@ -75,6 +74,7 @@ exports.authorCreate = [
         err.status = 400;
         return next(err);
       }
+      // Create an Author object with sanitized data
       const author = new Author(
         {
           first_name: req.body.first_name,
@@ -138,6 +138,54 @@ exports.authorDelete = function (req, res, next) {
 };
 
 // handle author update
-exports.authorUpdate = function (req, res) {
-  return res.status(200).json({});
-};
+exports.authorUpdate = [
+  authorValidation.validationRules(),
+  authorValidation.validate,
+  // process request after validation and sanitization
+  (req, res, next) => {
+    // data is already valid
+    async.parallel({
+      repeatedAuthor(callback) {
+        // find authors with the same parameters
+        Author.find({
+          first_name: req.body.first_name,
+          last_name: req.body.last_name,
+          date_of_birth: req.body.date_of_birth,
+          date_of_death: req.body.date_of_death,
+        })
+          .exec(callback);
+      },
+    }, (error, results) => {
+      // data is already valid
+      if (error) {return next(error);}
+      if (results.repeatedAuthor.length !== 0) {
+        // repeated input
+        const err = Error(
+          'One author already exists with same specifications.',
+        );
+        err.name = 'input error';
+        err.status = 400;
+        return next(err);
+      }
+      // Create an Author object with sanitized data
+      const updatedAuthor = new Author({
+        _id: req.params.id,
+        first_name: req.body.first_name,
+        family_name: req.body.family_name,
+        date_of_birth: req.body.date_of_birth,
+        date_of_death: req.body.date_of_death,
+      });
+      Author.findByIdAndUpdate(req.params.id, updatedAuthor, {})
+        .exec((err) => {
+          if (err) {return next(err);}
+          // return Author object with sanitized data
+          res.status(200).json({
+            first_name: updatedAuthor.first_name,
+            family_name: updatedAuthor.family_name,
+            date_of_birth: updatedAuthor.date_of_birth_formatted,
+            date_of_death: updatedAuthor.date_of_death_formatted,
+          });
+        });
+    });
+  },
+];

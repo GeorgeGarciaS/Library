@@ -5,7 +5,7 @@ const Author = require('../models/author');
 const Genre = require('../models/genre');
 
 function bookCreateErrorHandler(results, req) {
-  if (results.book.length !== 0) {
+  if (results.repeatedBook.length !== 0) {
     // repeated book input
     const err = Error(
       'The title and author selected are already in another book in the database',
@@ -35,7 +35,33 @@ function bookCreateErrorHandler(results, req) {
 }
 
 function bookUpdateErrorHandler(results, req) {
-
+  if (req.body.genre.length !== results.genre.length) {
+    // not all genres are valid ids
+    const err = Error(
+      'Not all genres IDs specified are not in the database',
+    );
+    err.name = 'input error';
+    err.status = 400;
+    return err;
+  }
+  if (results.author === null) {
+    // author id is not valid
+    const err = Error(
+      'Author ID specified is not in database',
+    );
+    err.name = 'input error';
+    err.status = 400;
+    return err;
+  }
+  if (results.repeatedBook.length !== 0) {
+    // similar book found
+    const err = Error(
+      'One book already exists with the same specifications.',
+    );
+    err.name = 'input error';
+    err.status = 400;
+    return err;
+  }
 }
 
 exports.index = function (req, res, next) {
@@ -108,7 +134,7 @@ exports.bookCreate = [
   (req, res, next) => {
     async.parallel({
       // search for repeated input
-      book(callback) {
+      repeatedBook(callback) {
         Book.find({title: req.body.title, author: req.body.author})
           .exec(callback);
       },
@@ -137,13 +163,12 @@ exports.bookCreate = [
       },
     },
     (error, results) => {
-      // Data is already valid
-      // Create an Book object with sanitized data
+      // data is already valid
       if (error) {return next(error);} // error in API usage
       // check if fetched results are valid
       const e = bookCreateErrorHandler(results, req, next);
       if (e) {return next(e);}
-
+      // Create an Book object with sanitized data
       const book = new Book(
         {
           title: req.body.title,
@@ -206,6 +231,73 @@ exports.bookDelete = function (req, res, next) {
 };
 
 // handle book update
-exports.bookUpdate = function (req, res) {
-  return res.status(200).json({});
-};
+exports.bookUpdate = [
+  bookValidation.validationRules(),
+  bookValidation.validate,
+  // process request after validation and sanitization
+  (req, res, next) => {
+    // data is already valid
+    async.parallel({
+      // find books with the same parameters
+      repeatedBook(callback) {
+        Book.find({
+          title: req.body.title,
+          author: req.body.author,
+          summary: req.body.summary,
+          isbn: req.body.isbn,
+          genre: req.body.genre,
+        })
+          .exec(callback);
+      },
+      // search for valid author
+      author(callback) {
+        Author.findById(req.body.author)
+          .exec(callback);
+      },
+      // search for valid genres in genre list
+      genre(cb) {
+        const genres = [];
+        async.map(
+          req.body.genre,
+          (genreID, callback) => {
+            Genre.findById(genreID)
+              .exec((err, result) => {
+                if (result != null) {
+                  genres.push(result);
+                }
+                callback();
+              });
+          },
+          () => {
+            cb(null, genres);
+          },
+        );
+      },
+    }, (error, results) => {
+      if (error) {return next(error);}
+      const err = bookUpdateErrorHandler(results, req);
+      if (err) {return next(err);}
+      // Create a Book object with sanitized data
+      const updatedBook = new Book({
+        _id: req.params.id,
+        title: req.body.title,
+        author: req.body.author,
+        summary: req.body.summary,
+        isbn: req.body.isbn,
+        genre: req.body.genre,
+      });
+      Book.findByIdAndUpdate(req.params.id, updatedBook, {})
+        .exec((e) => {
+          if (e) {return next(e);}
+          // return Author object with sanitized data
+          return res.status(200).json({
+            title: updatedBook.title,
+            author: updatedBook.author,
+            summary: updatedBook.summary,
+            isbn: updatedBook.isbn,
+            genre: updatedBook.genre,
+          });
+        });
+    });
+  },
+];

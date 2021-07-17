@@ -34,8 +34,31 @@ exports.bookList = function (req, res, next) {
 };
 
 // details for a specific book
-exports.bookDetail = function (req, res) {
-  return res.status(200).json({});
+exports.bookDetail = function (req, res, next) {
+  async.parallel({
+    book(callback) {
+      Book.findById(req.params.id)
+        .exec(callback);
+    },
+  }, (error, results) => {
+    // successful
+    if (error) {next(error);} // error in API usage
+    if (results.book === null) {
+      // no results
+      const err = Error('book not found');
+      err.name = 'database error';
+      err.status = 404;
+      return next(err);
+    }
+    return res.json({
+      // pass only necessary data
+      title: results.book.title,
+      summary: results.book.summary,
+      author: results.book.author,
+      isbn: results.book.isbn,
+      genre: results.book.genre,
+    });
+  });
 };
 
 // handle book create

@@ -5,8 +5,15 @@ const Author = require('../models/author');
 const Book = require('../models/book');
 
 // list of all authors
-exports.authorList = function (req, res) {
-  return res.status(200).json({});
+exports.authorList = function (req, res, next) {
+  Author.find()
+    .exec((error, authorList) => {
+      if (error) {
+        return next(error);
+      }
+      // successful
+      return res.status(200).json({authorList});
+    });
 };
 
 // details for a specific author

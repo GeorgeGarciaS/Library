@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 
 const mongoServer = require('./mongoDbConfigTesting');
 const app = require('../app');
+const populateDb = require('./populateDb');
 
 beforeAll((done) => {
-  // populate DB if necessary
+  populateDb.populateDbNow(done);
   done();
 });
 

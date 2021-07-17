@@ -89,8 +89,8 @@ exports.authorCreate = [
         return res.status(200).json({
           first_name: author.first_name,
           family_name: author.family_name,
-          date_of_birth: author.date_of_birth,
-          date_of_death: author.date_of_death,
+          date_of_birth: author.date_of_birth_formatted,
+          date_of_death: author.date_of_death_formatted,
         });
       });
     });

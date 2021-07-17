@@ -58,6 +58,8 @@ exports.index = function (req, res, next) {
 // list of all books
 exports.bookList = function (req, res, next) {
   Book.find()
+    .populate('author')
+    .populate('genre')
     .exec((error, bookList) => {
       if (error) {
         return next(error);
@@ -72,6 +74,8 @@ exports.bookDetail = function (req, res, next) {
   async.parallel({
     book(callback) {
       Book.findById(req.params.id)
+        .populate('author')
+        .populate('genre')
         .exec(callback);
     },
   }, (error, results) => {
@@ -84,6 +88,7 @@ exports.bookDetail = function (req, res, next) {
       err.status = 404;
       return next(err);
     }
+
     return res.json({
       // pass only necessary data
       title: results.book.title,
@@ -148,15 +153,19 @@ exports.bookCreate = [
           genre: req.body.genre,
         },
       );
+      book
+        .populate('author')
+        .populate('genre');
+      console.log(book.author);
       book.save((err) => {
         if (err) { return next(err); }
         // successful, return sanitized input
         return res.status(200).json({
           title: book.title,
-          author: book.author,
+          author: results.author,
           summary: book.summary,
           isbn: book.isbn,
-          genre: book.genre,
+          genre: results.genre,
         });
       });
     });
@@ -168,7 +177,10 @@ exports.bookDelete = function (req, res, next) {
   async.parallel({
     book(callback) {
       // search for valid book ID
-      Book.findById(req.params.id).exec(callback);
+      Book.findById(req.params.id)
+        .populate('author')
+        .populate('genre')
+        .exec(callback);
     },
   }, (error, results) => {
     if (error) {return next(error);}

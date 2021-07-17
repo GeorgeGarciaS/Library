@@ -84,7 +84,7 @@ exports.validationRules = () => [// validation chain
     // Validation //
     // custom validator to check for list
     .custom((value) => (Array.isArray(value)))
-    .withMessage('Genre input should be an array and should have at least one value.')
+    .withMessage('Genre input should be an array.')
     .bail()
     // custom validator to check for only strings inside array
     .custom((values) => {

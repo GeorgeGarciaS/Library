@@ -17,8 +17,34 @@ exports.genreList = function (req, res, next) {
 };
 
 // details for a specific genre
-exports.genreDetail = function (req, res) {
-  return res.status(200).json({});
+exports.genreDetail = function (req, res, next) {
+  async.parallel({
+    genre(callback) {
+      Genre.findById(req.params.id)
+        .exec(callback);
+    },
+    genre_books(callback) {
+      Book.find({genre: req.params.id})
+        .exec(callback);
+    },
+  },
+  (error, results) => {
+    // successful
+    if (error) {return next(error);} // error in API usage
+    if (results.genre === null) {
+      // no results
+      const err = Error('Genre not found');
+      err.name = 'database error';
+      err.status = 404;
+      return next(err);
+    }
+    // successful
+    return res.status(200).json({
+      // pass only necessary data
+      name: results.genre.name,
+      books: results.books,
+    });
+  });
 };
 
 // handle genre create

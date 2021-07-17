@@ -5,8 +5,15 @@ const Genre = require('../models/genre');
 const Book = require('../models/book');
 
 // list of all genre
-exports.genreList = function (req, res) {
-  return res.status(200).json({});
+exports.genreList = function (req, res, next) {
+  Genre.find()
+    .exec((err, genreList) => {
+      if (err) {
+        return next(err);
+      }
+      // successful
+      return res.status(200).json({genreList});
+    });
 };
 
 // details for a specific genre

@@ -90,8 +90,40 @@ exports.genreCreate = [
 ];
 
 // handle genre delete
-exports.genreDelete = function (req, res) {
-  return res.status(200).json({});
+exports.genreDelete = function (req, res, next) {
+  async.parallel({
+    genre(callback) {
+      Genre.findById(req.params.id).exec(callback);
+    },
+    genre_books(callback) {
+      Book.find({ genre: req.params.id }).exec(callback);
+    },
+  }, (error, results) => {
+    if (error) {return next(error);}
+    if (results.genre === null) {
+      // no results
+      const err = Error(
+        'Genre does not exist',
+      );
+      err.name = 'input error';
+      err.status = 404;
+      return next(err);
+    }
+    if (results.genre_books.length !== 0) {
+      // genre has associated books
+      const e = Error(
+        'genre has one or more books associated, please delete books first',
+      );
+      e.name = 'input error';
+      e.status = 400;
+      return next(e);
+    }
+    Genre.findByIdAndRemove(req.params.id, (err) => {if (err) {return next(err);}});
+    // successful
+    return res.status(200).json({
+      name: results.genre.name,
+    });
+  });
 };
 
 // handle genre update

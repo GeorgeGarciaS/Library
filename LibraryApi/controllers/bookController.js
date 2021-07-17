@@ -164,8 +164,33 @@ exports.bookCreate = [
 ];
 
 // handle book delete
-exports.bookDelete = function (req, res) {
-  return res.status(200).json({});
+exports.bookDelete = function (req, res, next) {
+  async.parallel({
+    book(callback) {
+      // search for valid book ID
+      Book.findById(req.params.id).exec(callback);
+    },
+  }, (error, results) => {
+    if (error) {return next(error);}
+    if (results.book === null) {
+      // no results
+      const err = Error(
+        'Book does not exist',
+      );
+      err.name = 'input error';
+      err.status = 404;
+      return next(err);
+    }
+    Book.findByIdAndRemove(req.params.id, (err) => {if (err) {return next(err);}});
+    // successful
+    return res.status(200).json({
+      title: results.book.title,
+      author: results.book.author,
+      summary: results.book.summary,
+      isbn: results.book.isbn,
+      genre: results.book.genre,
+    });
+  });
 };
 
 // handle book update

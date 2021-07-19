@@ -27,7 +27,7 @@ describe('Author sanitization process', () => {
 
 describe('Author validation process', () => {
   test('rejection of invalid date (input is DD/MM instead of MM/DD)', async () => {
-    request(app)
+    await request(app)
       .post('/authors')
       .send({
         first_name: 'Test Two',

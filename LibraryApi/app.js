@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const cors = require('cors');
 
 const indexRouter = require('./routes/indexRoutes');
 const bookRouter = require('./routes/bookRoutes');
@@ -20,11 +21,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/books', bookRouter);
 app.use('/authors', authorRouter);
 app.use('/genres', genreRouter);
+app.use('*', (req, res, next) => {next();});
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

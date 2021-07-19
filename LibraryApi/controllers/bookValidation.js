@@ -93,7 +93,7 @@ exports.validationRules = () => [// validation chain
         if (typeof value !== 'string') {
           valid = false;
         }
-        if (!(/^[0-9a-fA-F]$/.test(value))) {
+        if (!(/^[0-9a-fA-F]*$/.test(value))) {
           valid = false;
         }
       });

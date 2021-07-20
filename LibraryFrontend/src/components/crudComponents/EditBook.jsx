@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import _ from 'lodash';
 import BookForm from './BookForm';
 import Loading from '../errorHandlingComponents/Loading';
-import {fetchItems, postBook} from './helperFunctions';
+import {fetchItems, putBook} from './helperFunctions';
 
 const EditBook = ({history}) => {
   const { id } = useParams();
@@ -48,7 +48,7 @@ const EditBook = ({history}) => {
       genre: [updatedBook.genre],
     };
 
-    postBook(bookObj, history);
+    putBook(id, bookObj, history);
   };
   console.log(book, genres, authors);
   return (

@@ -2,9 +2,11 @@ import React from 'react';
 
 const InternalServerError = () => (
   <>
-    <div className="w3-ul w3-white w3-center w3-opacity">
-      <p className="message">Not Implemented</p>
-    </div>
+    <article id="main">
+      <header>
+        <h2>Not Implemented</h2>
+      </header>
+    </article>
   </>
 );
 

@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-app.use('/', indexRouter);
+app.use('/index', indexRouter);
 app.use('/books', bookRouter);
 app.use('/authors', authorRouter);
 app.use('/genres', genreRouter);

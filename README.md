@@ -12,6 +12,14 @@
 * Mongodb-memory-server: Artificial memory server used for Schema testing
 * Aync: Asynchronous module to make async code more readable
 
+## To Run
+
+npm install all modules in LibraryApi and LibraryFrontend.
+npm start in LibraryApi
+
+## Live project
+https://upgaradedlibrary.herokuapp.com/home
+
 ## Tests
 
 ### Integration Tests in Models

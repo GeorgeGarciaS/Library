@@ -38,6 +38,9 @@ bower_components
 build/Release
 
 # Dependency directories
+LibraryFrontend/node_modules/
+LibraryFrontend/public/
+LibraryFrontend/build/
 node_modules/
 jspm_packages/
 

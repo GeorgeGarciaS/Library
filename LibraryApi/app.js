@@ -1,3 +1,5 @@
+/* eslint-disable prefer-template */
+/* eslint-disable no-path-concat */
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -20,14 +22,20 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, 'LibraryFrontend/build')));
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(cors());
 
 app.use('/index', indexRouter);
 app.use('/books', bookRouter);
 app.use('/authors', authorRouter);
 app.use('/genres', genreRouter);
-app.use('*', (req, res, next) => {next();});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/LibraryFrontend/build/index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -51,4 +59,5 @@ app.use((err, req, res, next) => {
   }
   res.status(err.status || 500).json({errors: extractedErrors});
 });
+
 module.exports = app;

@@ -23,8 +23,16 @@
 
 
 ## Architecture Flow Diagram
+
 ![Image of MVCArchitecture](https://github.com/GeorgeGarciaS/Library/blob/main/LibraryApi/diagrams/MVCArchitecture.svg)
 
 ## DataBase Design
 ![Image of Database](https://github.com/GeorgeGarciaS/Library/blob/main/LibraryApi/diagrams/DatabaseDiagram.svg)
 
+## To Run
+
+npm install all modules in LibraryApi and LibraryFrontend.
+npm start in LibraryApi
+
+## Live project
+https://upgaradedlibrary.herokuapp.com/home

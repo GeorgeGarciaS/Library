@@ -73,7 +73,7 @@ describe('Author validation process', () => {
         first_name: 'Test Four',
         family_name: 'Test Four',
         date_of_birth: '2017-01-20',
-        date_of_death: '2007-01-20',
+        date_of_death: '2006-01-20',
       })
       .expect(400)
       .expect('Content-Type', /json/)

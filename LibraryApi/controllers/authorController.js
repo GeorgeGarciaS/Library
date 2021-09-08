@@ -63,7 +63,7 @@ exports.authorCreate = [
       },
     },
     (error, results) => {
-      // data is already valid
+      // data is valid
       if (error) {return next(error);} // error in API usage
       if (results.repeatedAuthor.length !== 0) {
         // repeated input
